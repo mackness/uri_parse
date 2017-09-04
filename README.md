@@ -29,7 +29,7 @@ uri.delete_port()\
 uri.set_params()\
 uri.delete_params()\
 uri.set_pathname()\
-uri.delete_pathname()
+uri.delete_pathname()\
 uri.set_pathname()\
 uri.delete_pathname()
 
