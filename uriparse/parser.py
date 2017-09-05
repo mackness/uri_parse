@@ -68,3 +68,8 @@ class Parser(object):
             return params.split('#')[0]
         else:
             return params
+
+    @property
+    def fragment(self):
+        """return fragment of uri"""
+        return self.uri.split('#')[-1]

@@ -58,5 +58,12 @@ class Tests(unittest.TestCase):
         self.assertEqual(params_1, 'user=mack', 'wrong params: user=mack  != ' + params_1)
         self.assertEqual(params_2, 'user=mack&id=123', 'wrong params: user=mack&id=123  != ' + params_2)
 
+    def test_fragment_property(self):
+        """test params property"""
+        fragment_1 = Parser('http://reddit.com:8080/r/python?user=mack#frag').fragment
+        fragment_2 = Parser('https://docs.python.org/3/library/re.html#raw-string-notation').fragment
+        self.assertEqual(fragment_1, 'frag', 'wrong frag: frag != ' + fragment_1)
+        self.assertEqual(fragment_2, 'raw-string-notation', 'wrong frag: raw-string-notation != ' + fragment_2)
+
 if __name__ == '__main__':
     unittest.main()
