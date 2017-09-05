@@ -80,3 +80,7 @@ class Parser(object):
             return self.uri.replace(self.scheme, scheme)
         else:
             return scheme + '://' + self.uri
+
+    def delete_scheme(self):
+        """delete scheme and return remaining uri"""
+        return self.set_scheme('').split('://')[-1]

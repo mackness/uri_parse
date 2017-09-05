@@ -74,6 +74,10 @@ class Tests(unittest.TestCase):
         self.assertEqual(Parser('www.internet.com').set_scheme('https'), 'https://www.internet.com')
         self.assertEqual(Parser('http://internet.com').set_scheme('https'), 'https://internet.com')
 
+    def test_delete_scheme_method(self):
+        """test set scheme method"""
+        self.assertEqual(Parser('https://reddit.com').delete_scheme(), 'reddit.com')
+
 
 if __name__ == '__main__':
     unittest.main()
