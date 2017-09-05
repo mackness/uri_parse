@@ -1,9 +1,10 @@
-
 """
     uriparse is a module for parsing and
      manipulating URIs based on rfc3986
     https://goo.gl/xFd1Ab
 """
+
+from .utils import is_int
 
 SCHEMES = ['ftp', 'http', 'gopher', 'nntp', 'telnet',
             'imap', 'wais', 'file', 'mms', 'https', 'shttp',
@@ -35,3 +36,15 @@ class Parser(object):
                 return host[1].split('.')[1]
             else:
                 return host[1].split('.')[0]
+
+    @property
+    def port(self):
+        """return port of uri"""
+        port = self.uri.split(':')
+
+        if is_int(port[-1]):
+            return port[-1]
+        else:
+            for part in port[-1].split('/'):
+                if is_int(part):
+                    return part
