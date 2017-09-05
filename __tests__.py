@@ -18,8 +18,15 @@ class Test(unittest.TestCase):
         """test the scheme property"""
         scheme_1 = Parser('http://test.com').scheme
         scheme_2 = Parser('https://test.com').scheme
-        self.assertEqual(scheme_1, 'http', 'did not retrieve correct scheme')
-        self.assertEqual(scheme_2, 'https', 'did not retrieve correct scheme')
+        self.assertEqual(scheme_1, 'http', 'wrong scheme: http != ' + scheme_1)
+        self.assertEqual(scheme_2, 'https', 'wrong scheme: https != ' + scheme_2)
+
+    def test_host_property(self):
+        """test the host property"""
+        host_1 = Parser('http://test.com').host
+        host_2 = Parser('https://internet.com').host
+        self.assertEqual(host_1, 'test', 'wrong host: subdomain != ' + host_1)
+        self.assertEqual(host_2, 'internet', 'wrong host: internet != ' + host_2)
 
 if __name__ == '__main__':
     unittest.main()

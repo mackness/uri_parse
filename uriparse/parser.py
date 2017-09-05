@@ -25,3 +25,13 @@ class Parser(object):
         scheme = self.uri.split('://')[0]
         if scheme in SCHEMES:
             return scheme
+
+    @property
+    def host(self):
+        """return host of uri"""
+        host = self.uri.split('://')
+        if host[0] in SCHEMES:
+            if host[1].split('.')[0] == 'www':
+                return host[1].split('.')[1]
+            else:
+                return host[1].split('.')[0]
