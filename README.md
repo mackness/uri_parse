@@ -36,3 +36,12 @@ uri.delete_pathname()
 ## run tests
 
 `python __tests__.py -v`
+
+## feature wishlist / code improvements
+- URI validation
+- URI normalization
+- URL, URI, URN identification
+- comprehensive mailto: url support
+- better warning / error handling
+- more robust and diverse test cases
+- URI templating or method chaining

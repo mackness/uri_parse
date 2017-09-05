@@ -5,6 +5,7 @@
 """
 
 from .utils import is_int
+import re
 
 SCHEMES = ['ftp', 'http', 'gopher', 'nntp', 'telnet',
             'imap', 'wais', 'file', 'mms', 'https', 'shttp',
@@ -17,6 +18,7 @@ class Parser(object):
             - splitting a URI into it's sub components
             - inserting, deleting, updating sub components
     """
+
     def __init__(self, uri_param):
         self.uri = uri_param
 
@@ -48,3 +50,12 @@ class Parser(object):
             for part in port[-1].split('/'):
                 if is_int(part):
                     return part
+
+    @property
+    def pathname(self):
+        """return pathname of uri"""
+        result = []
+        for part in self.uri.split('/'):
+            if re.match("^[a-zA-Z0-9_]*$", part):
+                result.append(part)
+        return '/'.join(result)

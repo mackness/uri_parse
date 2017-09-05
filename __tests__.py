@@ -11,8 +11,9 @@ class Tests(unittest.TestCase):
         self.assertIsNotNone(Parser('https://test.com'))
 
     """
-        utils tests
+        utility tests
     """
+
     def test_is_int_util(self):
         """test the is_int utility"""
         self.assertTrue(is_int(1))
@@ -39,7 +40,16 @@ class Tests(unittest.TestCase):
     def test_port_property(self):
         """test the port property"""
         port_1 = Parser('http://internet.com:8080/xpath/ypath/zpath#hash').port
+        port_2 = Parser('http://internet.com:3000/another/path').port
         self.assertEqual(port_1, '8080', 'wrong port: 8080 != ' + port_1)
+        self.assertEqual(port_2, '3000', 'wrong port: 3000 != ' + port_2)
+
+    def test_path_property(self):
+        """test the path property"""
+        path_1 = Parser('http://internet.com:8080/xpath/ypath/zpath').pathname
+        path_2 = Parser('https://reddit.com/r/python').pathname
+        self.assertEqual(path_1, '/xpath/ypath/zpath', 'wrong path: /xpath/ypath/zpath != ' + path_1)
+        self.assertEqual(path_2, '/r/python', 'wrong path: /r/python != ' + path_2)
 
 if __name__ == '__main__':
     unittest.main()
