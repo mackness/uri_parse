@@ -30,7 +30,7 @@ uri.delete_port()\
 uri.set_params(['string', 'string'])\
 uri.delete_params()\
 uri.set_pathname(['string', 'string'])\
-uri.delete_pathname()\
+uri.delete_pathname()
 
 ## run tests
 
