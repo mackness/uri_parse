@@ -96,8 +96,29 @@ class Tests(unittest.TestCase):
 
     def test_delete_port_method(self):
         """test delete port method"""
-        self.assertEqual(str(Parser('https://internet.com:3000').delete_port()), 'https://internet.com')
+        self.assertEqual(Parser('https://internet.com:3000').delete_port(), 'https://internet.com')
 
+    def test_set_params_method(self):
+        """test set params method"""
+        self.assertEqual(
+            Parser('https://internet.com').set_params(['id=123']),
+            'https://internet.com?id=123'
+        )
+        self.assertEqual(
+            Parser('https://internet.com').set_params(['username=mackness', 'id=123']),
+            'https://internet.com?username=mackness&id=123'
+        )
+        self.assertEqual(
+            Parser('https://internet.com/path').set_params(['username=mackness', 'id=123']),
+            'https://internet.com/path?username=mackness&id=123'
+        )
+
+    def test_delete_params_method(self):
+        """test delete params method"""
+        self.assertEqual(
+            Parser('https://internet.com').delete_params(),
+            'https://internet.com'
+        )
 
 if __name__ == '__main__':
     unittest.main()

@@ -110,3 +110,22 @@ class Parser(object):
     def delete_port(self):
         """delete port and return remaining uri"""
         return ':'.join(self.set_port('').split(':')[:-1])
+
+    def set_params(self, params):
+        """return full uri with updated params"""
+        if len(params) > 1:
+            param_string = '?' + '&'.join(params)
+        else:
+            param_string = '?' + ''.join(params)
+
+        if self.pathname:
+            return self.uri.replace(self.pathname, self.pathname + param_string)
+        elif self.port:
+            return self.uri.replace(self.port, self.port + param_string)
+        else:
+            return self.uri.replace(self.tld, self.tld + param_string)
+
+    def delete_params(self):
+        """delete port and return remaining uri"""
+        if self.params:
+            return ''.join(self.set_params('').split('?'))
