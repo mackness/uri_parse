@@ -14,6 +14,7 @@ uri = Parser('https://internet.com:8080/path?search=test#hash')
 uri.scheme\
 uri.subdomain\
 uri.host\
+uri.tld\
 uri.port\
 uri.pathname\
 uri.params\

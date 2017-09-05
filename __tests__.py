@@ -44,6 +44,13 @@ class Tests(unittest.TestCase):
         self.assertEqual(port_1, '8080', 'wrong port: 8080 != ' + port_1)
         self.assertEqual(port_2, '3000', 'wrong port: 3000 != ' + port_2)
 
+    def test_tld_property(self):
+        """test the tld property"""
+        tld_1 = Parser('http://www.internet.com').tld
+        tld_2 = Parser('http://www.internet.net').tld
+        self.assertEqual(tld_1, 'com', 'wrong tld: com != ' + tld_1)
+        self.assertEqual(tld_2, 'net', 'wrong tld: net != ' + tld_2)
+
     def test_path_property(self):
         """test the path property"""
         path_1 = Parser('http://internet.com:8080/xpath/ypath/zpath').pathname
@@ -77,6 +84,19 @@ class Tests(unittest.TestCase):
     def test_delete_scheme_method(self):
         """test set scheme method"""
         self.assertEqual(Parser('https://reddit.com').delete_scheme(), 'reddit.com')
+
+    def test_set_host_method(self):
+        """test set host method"""
+        self.assertEqual(Parser('https://reddit.com').set_host('internet'), 'https://internet.com')
+
+    def test_set_port_method(self):
+        """test set port method"""
+        self.assertEqual(Parser('https://internet.com:3000').set_port('8080'), 'https://internet.com:8080')
+        self.assertEqual(Parser('https://internet.com').set_port('8080'), 'https://internet.com:8080')
+
+    def test_delete_port_method(self):
+        """test delete port method"""
+        self.assertEqual(str(Parser('https://internet.com:3000').delete_port()), 'https://internet.com')
 
 
 if __name__ == '__main__':

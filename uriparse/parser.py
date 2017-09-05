@@ -12,6 +12,8 @@ SCHEMES = ['ftp', 'http', 'gopher', 'nntp', 'telnet',
             'snews', 'prospero', 'rtsp', 'rtspu', 'rsync', '',
             'svn', 'svn+ssh', 'sftp','nfs','git', 'git+ssh']
 
+TLDS = ['com', 'net', 'biz', 'gov']
+
 class Parser(object):
     """
         Parser class is responsible for:
@@ -52,6 +54,13 @@ class Parser(object):
                     return part
 
     @property
+    def tld(self):
+        """return tld of uri"""
+        for part in self.uri.split('.'):
+            if part in TLDS:
+                return part
+
+    @property
     def pathname(self):
         """return pathname of uri"""
         result = []
@@ -84,3 +93,20 @@ class Parser(object):
     def delete_scheme(self):
         """delete scheme and return remaining uri"""
         return self.set_scheme('').split('://')[-1]
+
+    def set_host(self, host):
+        """return full uri with updated host"""
+        if self.host:
+            return self.uri.replace(self.host, host)
+
+    def set_port(self, port):
+        """return full uri with updated port"""
+        if self.port:
+            return self.uri.replace(self.port, port)
+        else:
+            if self.tld:
+                return self.uri.replace(self.tld, self.tld + ':' +  port)
+
+    def delete_port(self):
+        """delete port and return remaining uri"""
+        return ':'.join(self.set_port('').split(':')[:-1])
