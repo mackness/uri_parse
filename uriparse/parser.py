@@ -129,3 +129,19 @@ class Parser(object):
         """delete port and return remaining uri"""
         if self.params:
             return ''.join(self.set_params('').split('?'))
+
+    def set_pathname(self, pathname):
+        """return full uri with updated pathname"""
+        pathname_part = '/' + '/'.join(pathname)
+
+        if self.pathname:
+            return self.uri.replace(self.pathname, pathname_part)
+        elif self.port:
+            return self.uri.replace(self.port, self.port + pathname_part)
+        else:
+            return self.uri.replace(self.tld, self.tld + pathname_part)
+
+    def delete_pathname(self):
+        """delete pathname and return remaining uri"""
+        if self.pathname:
+            return self.set_pathname('')

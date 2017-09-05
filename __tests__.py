@@ -120,5 +120,23 @@ class Tests(unittest.TestCase):
             'https://internet.com'
         )
 
+    def test_set_pathname_method(self):
+        """test set pathname method"""
+        self.assertEqual(
+            Parser('https://internet.com').set_pathname(['path']),
+            'https://internet.com/path'
+        )
+        self.assertEqual(
+            Parser('https://reddit.com').set_pathname(['r','python']),
+            'https://reddit.com/r/python'
+        )
+
+    def test_delete_pathname_method(self):
+        """test delete pathname method"""
+        self.assertEqual(
+            Parser('https://internet.com/path').delete_pathname(),
+            'https://internet.com/'
+        )
+
 if __name__ == '__main__':
     unittest.main()

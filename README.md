@@ -22,17 +22,15 @@ uri.fragment
 
 ## methods
 
-uri.set_scheme()\
-uri.delete_scheme()\
-uri.set_host()\
-uri.set_port()\
+uri.set_scheme(string)\
+uri.delete_scheme(string)\
+uri.set_host(string)\
+uri.set_port(string)\
 uri.delete_port()\
-uri.set_params()\
+uri.set_params(['string', 'string'])\
 uri.delete_params()\
-uri.set_pathname()\
+uri.set_pathname(['string', 'string'])\
 uri.delete_pathname()\
-uri.set_pathname()\
-uri.delete_pathname()
 
 ## run tests
 
