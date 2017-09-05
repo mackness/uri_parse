@@ -65,5 +65,15 @@ class Tests(unittest.TestCase):
         self.assertEqual(fragment_1, 'frag', 'wrong frag: frag != ' + fragment_1)
         self.assertEqual(fragment_2, 'raw-string-notation', 'wrong frag: raw-string-notation != ' + fragment_2)
 
+    """
+        method tests
+    """
+
+    def test_set_scheme_method(self):
+        """test set scheme method"""
+        self.assertEqual(Parser('www.internet.com').set_scheme('https'), 'https://www.internet.com')
+        self.assertEqual(Parser('http://internet.com').set_scheme('https'), 'https://internet.com')
+
+
 if __name__ == '__main__':
     unittest.main()

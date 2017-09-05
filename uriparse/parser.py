@@ -4,8 +4,8 @@
     https://goo.gl/xFd1Ab
 """
 
-from .utils import is_int
 import re
+from .utils import is_int
 
 SCHEMES = ['ftp', 'http', 'gopher', 'nntp', 'telnet',
             'imap', 'wais', 'file', 'mms', 'https', 'shttp',
@@ -73,3 +73,10 @@ class Parser(object):
     def fragment(self):
         """return fragment of uri"""
         return self.uri.split('#')[-1]
+
+    def set_scheme(self, scheme):
+        """return full uri with updated scheme"""
+        if self.scheme:
+            return self.uri.replace(self.scheme, scheme)
+        else:
+            return scheme + '://' + self.uri
