@@ -59,3 +59,12 @@ class Parser(object):
             if re.match("^[a-zA-Z0-9_]*$", part):
                 result.append(part)
         return '/'.join(result)
+
+    @property
+    def params(self):
+        """return params of uri"""
+        params = self.uri.split('?')[-1]
+        if '#' in params:
+            return params.split('#')[0]
+        else:
+            return params

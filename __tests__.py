@@ -51,5 +51,12 @@ class Tests(unittest.TestCase):
         self.assertEqual(path_1, '/xpath/ypath/zpath', 'wrong path: /xpath/ypath/zpath != ' + path_1)
         self.assertEqual(path_2, '/r/python', 'wrong path: /r/python != ' + path_2)
 
+    def test_params_property(self):
+        """test params property"""
+        params_1 = Parser('http://reddit.com:8080/r/python?user=mack#frag').params
+        params_2 = Parser('http://reddit.com:8080/r/python?user=mack&id=123').params
+        self.assertEqual(params_1, 'user=mack', 'wrong params: user=mack  != ' + params_1)
+        self.assertEqual(params_2, 'user=mack&id=123', 'wrong params: user=mack&id=123  != ' + params_2)
+
 if __name__ == '__main__':
     unittest.main()
