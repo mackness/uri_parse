@@ -1,142 +1,117 @@
 """uriparse test file"""
 
 import unittest
-from uriparse import Parser, is_int
+from uriparse import splituri, unsplituri
 
 class Tests(unittest.TestCase):
-    """uriparse test file"""
+    """uriparse test class"""
 
-    def parser_initialization_test(self):
-        """test parser initialization"""
-        self.assertIsNotNone(Parser('https://test.com'))
+    def test_properties(self):
+        """test SplitResultsContainer class memebers"""
+        uri = 'foo://username:password@www.example.com:123/hello/world/there.html?name=ferret#foo'
+        self.assertEquals(splituri(uri).scheme, 'foo')
+        self.assertEquals(splituri(uri).authority, 'username:password@www.example.com:123')
+        self.assertEquals(splituri(uri).path, '/hello/world/there.html')
+        self.assertEquals(splituri(uri).fragment, 'foo')
+        self.assertEquals(splituri(uri).userinfo, 'username:password')
+        self.assertEquals(splituri(uri).host, 'www.example.com')
+        self.assertEquals(splituri(uri).port, '123')
 
-    """
-        utility tests
-    """
+    def test_split_factory(self):
+        """test splituri and unsplituri factory functions"""
+        cases = [
+            ('foo://example.com:8042/over/there?name=ferret#nose',
+             ('foo', 'example.com:8042', '/over/there', 'name=ferret', 'nose')),
+            ('file:///Users/macksol/Desktop/Book.html',
+             ('file', '', '/Users/macksol/Desktop/Book.html', None, None)),
+            ('arn:aws:elasticbeanstalk:us-east-1',
+             ('arn', None, 'aws:elasticbeanstalk:us-east-1', None, None)),
+        ]
 
-    def test_is_int_util(self):
-        """test the is_int utility"""
-        self.assertTrue(is_int(1))
-        self.assertFalse(is_int('a66378795e0b23491b9fb1c2c4b29ca8cfc7bf8c'))
+        for uri, parts in cases:
+            self.assertEquals(tuple(splituri(uri)), parts)
 
-    """
-        property tests
-    """
+    def test_unsplit_factory(self):
+        """test splituri and unsplituri factory functions"""
+        cases = [
+            (('foo', 'example.com:8042', '/over/there', 'name=ferret', 'nose'),
+             'foo://example.com:8042/over/there?name=ferret#nose'),
+            (('file', '', '/Users/macksol/Desktop/Book.html', None, None),
+             'file:///Users/macksol/Desktop/Book.html'),
+            (('arn', None, 'aws:elasticbeanstalk:us-east-1', None, None),
+             'arn:aws:elasticbeanstalk:us-east-1'),
+        ]
 
-    def test_scheme_property(self):
-        """test the scheme property"""
-        scheme_1 = Parser('http://test.com').scheme
-        scheme_2 = Parser('https://test.com').scheme
-        self.assertEqual(scheme_1, 'http', 'wrong scheme: http != ' + scheme_1)
-        self.assertEqual(scheme_2, 'https', 'wrong scheme: https != ' + scheme_2)
+        for uri, parts in cases:
+            self.assertEquals(unsplituri(uri), parts)
 
-    def test_host_property(self):
-        """test the host property"""
-        host_1 = Parser('http://test.com').host
-        host_2 = Parser('https://internet.com').host
-        self.assertEqual(host_1, 'test', 'wrong host: subdomain != ' + host_1)
-        self.assertEqual(host_2, 'internet', 'wrong host: internet != ' + host_2)
+    def test_split_uri(self):
+        """test split uri method"""
+        cases = [
+            ('foo://username:password@www.example.com:123&?name=ferret&id=123',
+             {'name': 'ferret', 'id': '123'}),
+            ('https://www.google.com/search?q=42&oq=42&&sourceid=chrome&ie=UTF-8',
+             {'q': '42', '': '', 'sourceid': 'chrome', 'ie': 'UTF-8', 'oq': '42'}),
+            ('https://www.google.com/search?q=42&oq=42&&sourceid=chrome&ie=UTF-8#frag',
+             {'q': '42', '': '', 'sourceid': 'chrome', 'ie': 'UTF-8', 'oq': '42'})
+        ]
 
-    def test_port_property(self):
-        """test the port property"""
-        port_1 = Parser('http://internet.com:8080/xpath/ypath/zpath#hash').port
-        port_2 = Parser('http://internet.com:3000/another/path').port
-        self.assertEqual(port_1, '8080', 'wrong port: 8080 != ' + port_1)
-        self.assertEqual(port_2, '3000', 'wrong port: 3000 != ' + port_2)
+        for uri, dictionary in cases:
+            self.assertEquals(splituri(uri).getquery(), dictionary)
 
-    def test_tld_property(self):
-        """test the tld property"""
-        tld_1 = Parser('http://www.internet.com').tld
-        tld_2 = Parser('http://www.internet.net').tld
-        self.assertEqual(tld_1, 'com', 'wrong tld: com != ' + tld_1)
-        self.assertEqual(tld_2, 'net', 'wrong tld: net != ' + tld_2)
+    def test_appendquery(self):
+        """test appending query parameters"""
+        cases = [
+            ({'id':'123'},
+             'https://goo.gl/GjxaRz',
+             'https://goo.gl/GjxaRz?id=123'),
+            ({'id':'123', 'user':'mack', 'xid':'d4d874a8d34040b0c29e0dd526d0b20a75448e44'},
+             'foo://username:password@www.example.com:123?name=ferret',
+             'foo://username:password@www.example.com:123?name=ferret&xid=d4d874a8d34040b0c29e0dd526d0b20a75448e44&id=123&user=mack'),
+            ({'id':'123'},
+             'foo://username:password@www.example.com:123?name=ferret#hash',
+             'foo://username:password@www.example.com:123?name=ferret&id=123#hash')
+        ]
 
-    def test_path_property(self):
-        """test the path property"""
-        path_1 = Parser('http://internet.com:8080/xpath/ypath/zpath').pathname
-        path_2 = Parser('https://reddit.com/r/python').pathname
-        self.assertEqual(path_1, '/xpath/ypath/zpath', 'wrong path: /xpath/ypath/zpath != ' + path_1)
-        self.assertEqual(path_2, '/r/python', 'wrong path: /r/python != ' + path_2)
+        for param, uri, result in cases:
+            self.assertEquals(splituri(uri).appendquery(param), result)
 
-    def test_params_property(self):
-        """test params property"""
-        params_1 = Parser('http://reddit.com:8080/r/python?user=mack#frag').params
-        params_2 = Parser('http://reddit.com:8080/r/python?user=mack&id=123').params
-        self.assertEqual(params_1, 'user=mack', 'wrong params: user=mack  != ' + params_1)
-        self.assertEqual(params_2, 'user=mack&id=123', 'wrong params: user=mack&id=123  != ' + params_2)
+    def test_appendpath(self):
+        """test appending path components"""
+        cases = [
+            (['path'],
+             'https://goo.gl/GjxaRz/',
+             'https://goo.gl/GjxaRz/path'),
+            (['deep','deep','123','path'],
+             'https://goo.gl/#hash',
+             'https://goo.gl/deep/deep/123/path#hash'),
+        ]
 
-    def test_fragment_property(self):
-        """test params property"""
-        fragment_1 = Parser('http://reddit.com:8080/r/python?user=mack#frag').fragment
-        fragment_2 = Parser('https://docs.python.org/3/library/re.html#raw-string-notation').fragment
-        self.assertEqual(fragment_1, 'frag', 'wrong frag: frag != ' + fragment_1)
-        self.assertEqual(fragment_2, 'raw-string-notation', 'wrong frag: raw-string-notation != ' + fragment_2)
+        for param, uri, result in cases:
+            self.assertEquals(splituri(uri).appendpath(param), result)
 
-    """
-        method tests
-    """
+    def test_update(self):
+        """test updating URI components"""
+        cases = [
+            (('scheme','http'),
+             'https://goo.gl/GjxaRz/',
+             'http://goo.gl/GjxaRz/'),
+            (('fragment','div'),
+             'foo://example.com:8042/over/there?name=ferret#nose',
+             'foo://example.com:8042/over/there?name=ferret#div'),
+            (('authority','reddit.com:8080'),
+             'foo://example.com:8042/over/there?name=ferret#nose',
+             'foo://reddit.com:8080/over/there?name=ferret#nose'),
+            (('scheme','http'),
+             'foo://example.com:8042/over/there?name=ferret#nose',
+             'http://example.com:8042/over/there?name=ferret#nose'),
+            (('path','/over/where'),
+             'http://example.com:8042/over/there?name=ferret#nose',
+             'http://example.com:8042/over/where?name=ferret#nose')
+        ]
 
-    def test_set_scheme_method(self):
-        """test set scheme method"""
-        self.assertEqual(Parser('www.internet.com').set_scheme('https'), 'https://www.internet.com')
-        self.assertEqual(Parser('http://internet.com').set_scheme('https'), 'https://internet.com')
-
-    def test_delete_scheme_method(self):
-        """test set scheme method"""
-        self.assertEqual(Parser('https://reddit.com').delete_scheme(), 'reddit.com')
-
-    def test_set_host_method(self):
-        """test set host method"""
-        self.assertEqual(Parser('https://reddit.com').set_host('internet'), 'https://internet.com')
-
-    def test_set_port_method(self):
-        """test set port method"""
-        self.assertEqual(Parser('https://internet.com:3000').set_port('8080'), 'https://internet.com:8080')
-        self.assertEqual(Parser('https://internet.com').set_port('8080'), 'https://internet.com:8080')
-
-    def test_delete_port_method(self):
-        """test delete port method"""
-        self.assertEqual(Parser('https://internet.com:3000').delete_port(), 'https://internet.com')
-
-    def test_set_params_method(self):
-        """test set params method"""
-        self.assertEqual(
-            Parser('https://internet.com').set_params(['id=123']),
-            'https://internet.com?id=123'
-        )
-        self.assertEqual(
-            Parser('https://internet.com').set_params(['username=mackness', 'id=123']),
-            'https://internet.com?username=mackness&id=123'
-        )
-        self.assertEqual(
-            Parser('https://internet.com/path').set_params(['username=mackness', 'id=123']),
-            'https://internet.com/path?username=mackness&id=123'
-        )
-
-    def test_delete_params_method(self):
-        """test delete params method"""
-        self.assertEqual(
-            Parser('https://internet.com').delete_params(),
-            'https://internet.com'
-        )
-
-    def test_set_pathname_method(self):
-        """test set pathname method"""
-        self.assertEqual(
-            Parser('https://internet.com').set_pathname(['path']),
-            'https://internet.com/path'
-        )
-        self.assertEqual(
-            Parser('https://reddit.com').set_pathname(['r','python']),
-            'https://reddit.com/r/python'
-        )
-
-    def test_delete_pathname_method(self):
-        """test delete pathname method"""
-        self.assertEqual(
-            Parser('https://internet.com/path').delete_pathname(),
-            'https://internet.com/'
-        )
+        for params, uri, result in cases:
+            self.assertEquals(splituri(uri).update(params[0], params[1]), result)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,147 +1,148 @@
 """
-    uriparse is a module for parsing and
-     manipulating URIs based on rfc3986
-    https://goo.gl/xFd1Ab
+    uriparse is a standards compliant module for parsing an manipulating URIs
 """
 
 import re
-from .utils import is_int
+import recordtype
 
-SCHEMES = ['ftp', 'http', 'gopher', 'nntp', 'telnet',
-            'imap', 'wais', 'file', 'mms', 'https', 'shttp',
-            'snews', 'prospero', 'rtsp', 'rtspu', 'rsync', '',
-            'svn', 'svn+ssh', 'sftp','nfs','git', 'git+ssh']
+_URI_COMPONENTS = ('scheme', 'authority', 'path', 'query', 'fragment')
 
-TLDS = ['com', 'net', 'biz', 'gov']
-
-class Parser(object):
+class SplitResultsContainer(recordtype.recordtype('SplitResultsContainer', _URI_COMPONENTS)):
     """
-        Parser class is responsible for:
-            - splitting a URI into it's sub components
-            - inserting, deleting, updating sub components
+        This class acts as a container for the results of the regex based URI componentization.
     """
 
-    def __init__(self, uri_param):
-        self.uri = uri_param
+    # RFC 3986 Appendix B
+    # https://goo.gl/WVNwU3
+    RE = re.compile(br"""
+    (?:([^:/?#]+):)?        # scheme
+    (?://([^/?#]*))?        # authority
+    ([^?#]*)                # path
+    (?:\?([^#]*))?          # query
+    (?:\#(.*))?             # fragment
+    """, flags=re.VERBOSE)
+
+    # RFC 3986 2.2 gen-delims
+    # https://goo.gl/AuU5xb
+    COLON, SLASH, QUEST, HASH, LBRACKET, RBRACKET, AT = (
+        u':', u'/', u'?', u'#', u'[', u']', u'@'
+    )
+
+    # RFC 3.0 Components
+    # https://goo.gl/BLVqii
+    SCHEME, AUTH, USER, HOST, PORT, PATH, QUERY, FRAG = (
+        'scheme', 'authority', 'user', 'host', 'port', 'path', 'query', 'fragment'
+    )
+
+    EMPTY, EQL, DIGITS, AMP = '', '=',  b'0123456789', u'&'
 
     @property
-    def scheme(self):
-        """return scheme of uri"""
-        scheme = self.uri.split('://')[0]
-        if scheme in SCHEMES:
-            return scheme
+    def userinfo(self):
+        if self.authority is not None:
+            userinfo, delim, _ = self.authority.rpartition(self.AT)
+            if delim:
+                return userinfo
+            else:
+                return None
 
     @property
     def host(self):
-        """return host of uri"""
-        host = self.uri.split('://')
-        if host[0] in SCHEMES:
-            if host[1].split('.')[0] == 'www':
-                return host[1].split('.')[1]
-            else:
-                return host[1].split('.')[0]
+        authority = self.authority
+        if authority is None:
+            return None
+        _, _, hostinfo = authority.rpartition(self.AT)
+        host, _, port = hostinfo.rpartition(self.COLON)
+        if port.lstrip(self.DIGITS):
+            return hostinfo
+        else:
+            return host
 
     @property
     def port(self):
-        """return port of uri"""
-        port = self.uri.split(':')
-
-        if is_int(port[-1]):
-            return port[-1]
+        authority = self.authority
+        if authority is None:
+            return None
+        _, present, port = authority.rpartition(self.COLON)
+        if present and not port.lstrip(self.DIGITS):
+            return port
         else:
-            for part in port[-1].split('/'):
-                if is_int(part):
-                    return part
+            return None
 
-    @property
-    def tld(self):
-        """return tld of uri"""
-        for part in self.uri.split('.'):
-            if part in TLDS:
-                return part
-
-    @property
-    def pathname(self):
-        """return pathname of uri"""
+    def _geturi(self):
+        """return full uri based on values stored in SplitResultsContainer properties"""
+        scheme, authority, path, query, fragment = self
         result = []
-        for part in self.uri.split('/'):
-            if re.match("^[a-zA-Z0-9_]*$", part):
-                result.append(part)
-        return '/'.join(result)
+        if scheme is not None:
+            result.append(scheme + self.COLON)
+        if authority is not None:
+            result.append(self.SLASH + self.SLASH + authority)
+        if path is not None:
+            result.append(path)
+        if query is not None:
+            result.append(self.QUEST + query)
+        if fragment is not None:
+            result.append(self.HASH + fragment)
+        return self.EMPTY.join(result)
 
-    @property
-    def params(self):
-        """return params of uri"""
-        params = self.uri.split('?')[-1]
-        if '#' in params:
-            return params.split('#')[0]
+    def getquery(self):
+        params = {}
+        if self.query:
+            if self.AMP in self.query:
+                for query in self.query.split(self.AMP):
+                    name, _, value = query.rpartition(self.EQL)
+                    params[name] = value
         else:
-            return params
+            return None
+        return params
 
-    @property
-    def fragment(self):
-        """return fragment of uri"""
-        return self.uri.split('#')[-1]
+    def appendquery(self, params):
+        if params:
+            if isinstance(params, dict):
+                result = []
+                for key, value in params.items():
+                    result.append(self.EQL.join([key, value]))
+                if self.query:
+                    setattr(self, self.QUERY, self.AMP.join([self.query, self.AMP.join(result)]))
+                else:
+                    setattr(self, self.QUERY, self.AMP.join(result))
+            else:
+                raise TypeError('argument must be a dict')
+        return self._geturi()
 
-    def set_scheme(self, scheme):
-        """return full uri with updated scheme"""
-        if self.scheme:
-            return self.uri.replace(self.scheme, scheme)
-        else:
-            return scheme + '://' + self.uri
+    def appendpath(self, path):
+        if path:
+            if isinstance(path, list):
+                if self.path.endswith(self.SLASH):
+                    setattr(self, self.PATH, self.EMPTY.join([self.path, self.SLASH.join(path)]))
+                else:
+                    setattr(self, self.PATH, self.SLASH.join([self.path, self.SLASH.join(path)]))
+            else:
+                raise TypeError('argument must be a list')
+        return self._geturi()
 
-    def delete_scheme(self):
-        """delete scheme and return remaining uri"""
-        return self.set_scheme('').split('://')[-1]
+    def update(self, attribute, value):
+        if attribute not in [self.SCHEME, self.AUTH, self.PATH, self.QUERY, self.FRAG]:
+            raise AttributeError('{} attribute is not supported'.format(attribute))
 
-    def set_host(self, host):
-        """return full uri with updated host"""
-        if self.host:
-            return self.uri.replace(self.host, host)
+        setattr(self, attribute, value)
+        return self._geturi()
 
-    def set_port(self, port):
-        """return full uri with updated port"""
-        if self.port:
-            return self.uri.replace(self.port, port)
-        else:
-            if self.tld:
-                return self.uri.replace(self.tld, self.tld + ':' +  port)
+    def join(self, parta, partb):
+        """join two URI parts togehter"""
 
-    def delete_port(self):
-        """delete port and return remaining uri"""
-        return ':'.join(self.set_port('').split(':')[:-1])
 
-    def set_params(self, params):
-        """return full uri with updated params"""
-        if len(params) > 1:
-            param_string = '?' + '&'.join(params)
-        else:
-            param_string = '?' + ''.join(params)
+def splituri(uristring):
+    """
+        This factory returns an instance of SplitResultsContainer that contains a 5 part tuple
+        of each top level URI component as well as properties for authority sub components
+        <scheme>://<authority>/<path>?<query>#<fragment>
+    """
+    return SplitResultsContainer(*SplitResultsContainer.RE.match(uristring).groups())
 
-        if self.pathname:
-            return self.uri.replace(self.pathname, self.pathname + param_string)
-        elif self.port:
-            return self.uri.replace(self.port, self.port + param_string)
-        else:
-            return self.uri.replace(self.tld, self.tld + param_string)
-
-    def delete_params(self):
-        """delete port and return remaining uri"""
-        if self.params:
-            return ''.join(self.set_params('').split('?'))
-
-    def set_pathname(self, pathname):
-        """return full uri with updated pathname"""
-        pathname_part = '/' + '/'.join(pathname)
-
-        if self.pathname:
-            return self.uri.replace(self.pathname, pathname_part)
-        elif self.port:
-            return self.uri.replace(self.port, self.port + pathname_part)
-        else:
-            return self.uri.replace(self.tld, self.tld + pathname_part)
-
-    def delete_pathname(self):
-        """delete pathname and return remaining uri"""
-        if self.pathname:
-            return self.set_pathname('')
+def unsplituri(parts):
+    """
+        This recomposes individual components back into a valid URI
+        RFC 3986 5.3 https://goo.gl/kLYVDw
+    """
+    scheme, authority, path, query, fragment = parts
+    return SplitResultsContainer(scheme, authority, path, query, fragment)._geturi()
