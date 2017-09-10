@@ -3,7 +3,6 @@
 A standards compliant Python module for parsing and manipulating URIs [RFC3986](https://tools.ietf.org/html/rfc3986)
 
 ## Usage
-----
 ```
 from uriparse import splituri, unsplituri
 
@@ -61,7 +60,6 @@ should be noted that it's possible to use getquery to access individual params.
 ```
 
 ## Attributes
-----
 .`scheme`\
 .`authority`\
 .`userinfo`\
@@ -72,7 +70,6 @@ should be noted that it's possible to use getquery to access individual params.
 .`fragment`
 
 ## Methods
-----
 - getquery()
     * `description` Get all the query parameters as a dict.
     * `arguments` None
