@@ -73,15 +73,15 @@ class SplitResultsContainer(recordtype.recordtype('SplitResultsContainer', _URI_
         scheme, authority, path, query, fragment = self
         result = []
         if scheme is not None:
-            result.append(scheme + self.COLON)
+            result.append(self.EMPTY.join([scheme, self.COLON]))
         if authority is not None:
-            result.append(self.SLASH + self.SLASH + authority)
+            result.append(self.EMPTY.join([self.SLASH , self.SLASH, authority]))
         if path is not None:
             result.append(path)
         if query is not None:
-            result.append(self.QUEST + query)
+            result.append(self.EMPTY.join([self.QUEST, query]))
         if fragment is not None:
-            result.append(self.HASH + fragment)
+            result.append(self.EMPTY.join([self.HASH, fragment]))
         return self.EMPTY.join(result)
 
     def getquery(self):
@@ -122,7 +122,7 @@ class SplitResultsContainer(recordtype.recordtype('SplitResultsContainer', _URI_
 
     def update(self, attribute, value):
         if attribute not in [self.SCHEME, self.AUTH, self.PATH, self.QUERY, self.FRAG]:
-            raise AttributeError('{} attribute is not supported'.format(attribute))
+             AttributeError('{} attribute is not supported'.format(attribute))
 
         setattr(self, attribute, value)
         return self._geturi()
