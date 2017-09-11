@@ -51,7 +51,7 @@ SplitResultContainer(scheme='https', authority='internet.com:8080', path='/path'
 # update can also be used to remove URI parts
 >>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
 >>> splituri(uri).update('hash', '')
-'http://john:doe@internet.com:8080/path?search=test&id=123#hash'
+'http://john:doe@internet.com:8080/path?search=test&id=123'
 
 # the supported parts for this operation are scheme, authority, path, query, and fragment
 
