@@ -50,7 +50,7 @@ class Tests(unittest.TestCase):
         cases = [
             ('foo://username:password@www.example.com:123&?name=ferret',
              {'name': 'ferret'}),
-            ('foo://username:password@www.example.com:123&?name=ferret&id=123',
+            ('foo://username:password@www.example.com:123?name=ferret&id=123',
              {'name': 'ferret', 'id': '123'}),
             ('https://www.google.com/search?q=42&oq=42&&sourceid=chrome&ie=UTF-8',
              {'q': '42', '': '', 'sourceid': 'chrome', 'ie': 'UTF-8', 'oq': '42'}),
