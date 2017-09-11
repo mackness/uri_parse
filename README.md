@@ -99,6 +99,7 @@ SplitResultContainer(scheme='https', authority='internet.com:8080', path='/path'
 
 ## Limitations
 - this module does not fully support IP based host formats [7.4](https://tools.ietf.org/html/rfc3986#section-7.4)
+- proper encoding for each URI part [2.1](https://tools.ietf.org/html/rfc3986#section-2.1)
 
 ## Contributing
 - Best way to extend this module:
