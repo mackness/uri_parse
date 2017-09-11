@@ -79,7 +79,7 @@ SplitResultContainer(scheme='https', authority='internet.com:8080', path='/path'
     * `return` full URI
 
 - appendpath([value:string, value:string]:list)
-    * `description` Tf path exists this method will append to it, if it does not exist this method will set it.
+    * `description` If path exists this method will append to it, if it does not exist this method will set it.
     * `arguments` takes 1 list argrument
     * `return` full URI
 
