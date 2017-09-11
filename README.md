@@ -26,7 +26,7 @@ SplitResultContainer(scheme='https', authority='internet.com:8080', path='/path'
 # of SplitResultsContainer which contains a 5 item tuple of the split
 # results all of the  properties and methods documented below
 
-# unsplituri
+# unsplituri()
 >>> unsplituri(('http', 'internet.com:8080', 'path', 'id=123', 'hash'))
 'http://internet.com:8080path?id=123#hash'
 
@@ -43,7 +43,7 @@ SplitResultContainer(scheme='https', authority='internet.com:8080', path='/path'
 
 ...
 
-# udpate()
+# update()
 >>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
 >>> splituri(uri).update('scheme', 'http')
 'http://john:doe@internet.com:8080/path?search=test&id=123#hash'
