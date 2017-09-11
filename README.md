@@ -96,7 +96,7 @@ SplitResultContainer(scheme='https', authority='internet.com:8080', path='/path'
 - URL URN identificaiton
 - Currently errors are handled in SplitResultsContainer but creating an error handling subclass my be a nice separation of concerns
 - method chaining and URI templating
-- ability to pass default values as arguments to methods.
+- ability to pass default values as arguments to methods
 
 ## Limitations
 - this module does not fully support IP based host formats [7.4](https://tools.ietf.org/html/rfc3986#section-7.4)
