@@ -36,7 +36,7 @@ SplitResultContainer(scheme='https', authority='internet.com:8080', path='/path'
 ...
 
 # getquery()
-should be noted that it's possible to use getquery to access individual params.
+# should be noted that it's possible to use getquery to access individual params.
 >>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
 >>> splituri(uri).getquery().get('search')
 'test'
@@ -46,6 +46,11 @@ should be noted that it's possible to use getquery to access individual params.
 # udpate()
 >>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
 >>> splituri(uri).update('scheme', 'http')
+'http://john:doe@internet.com:8080/path?search=test&id=123#hash'
+
+# update can also be used to remove URI parts
+>>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
+>>> splituri(uri).update('hash', '')
 'http://john:doe@internet.com:8080/path?search=test&id=123#hash'
 
 # the supported parts for this operation are scheme, authority, path, query, and fragment
@@ -95,7 +100,7 @@ should be noted that it's possible to use getquery to access individual params.
 ## Limitations
 - this module does not fully support IP based host formats [7.4](https://tools.ietf.org/html/rfc3986#section-7.4)
 
-## Extensibility
+## Contributing
 - Best way to extend this module:
     - add method to SplitResultsContainer class in uriparse/split.py
     - add unit test to ./__tests__.py
