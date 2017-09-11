@@ -45,9 +45,11 @@ class Tests(unittest.TestCase):
         for uri, parts in cases:
             self.assertEquals(unsplituri(uri), parts)
 
-    def test_split_uri(self):
+    def test_getquery(self):
         """test split uri method"""
         cases = [
+            ('foo://username:password@www.example.com:123&?name=ferret',
+             {'name': 'ferret'}),
             ('foo://username:password@www.example.com:123&?name=ferret&id=123',
              {'name': 'ferret', 'id': '123'}),
             ('https://www.google.com/search?q=42&oq=42&&sourceid=chrome&ie=UTF-8',

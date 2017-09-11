@@ -91,6 +91,9 @@ class SplitResultsContainer(recordtype.recordtype('SplitResultsContainer', _URI_
                 for query in self.query.split(self.AMP):
                     name, _, value = query.rpartition(self.EQL)
                     params[name] = value
+            else:
+                name, _, value = self.query.rpartition(self.EQL)
+                params[name] = value
         else:
             return None
         return params
