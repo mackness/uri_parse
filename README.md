@@ -36,7 +36,7 @@ SplitResultContainer(scheme='https', authority='internet.com:8080', path='/path'
 ...
 
 # getquery()
-should be noted that it's possible to use getquery to access individual params.
+# should be noted that it's possible to use getquery to access individual params.
 >>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
 >>> splituri(uri).getquery().get('search')
 'test'
@@ -46,6 +46,12 @@ should be noted that it's possible to use getquery to access individual params.
 # udpate()
 >>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
 >>> splituri(uri).update('scheme', 'http')
+'http://john:doe@internet.com:8080/path?search=test&id=123#hash'
+
+
+# update can also be used to remove URI parts
+>>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
+>>> splituri(uri).update('hash', '')
 'http://john:doe@internet.com:8080/path?search=test&id=123#hash'
 
 # the supported parts for this operation are scheme, authority, path, query, and fragment
