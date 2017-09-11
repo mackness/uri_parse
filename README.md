@@ -50,13 +50,6 @@ should be noted that it's possible to use getquery to access individual params.
 
 # the supported parts for this operation are scheme, authority, path, query, and fragment
 
-...
-
-# join()
->>> uri = 'https://john:doe@internet.com:8080/path?search=test&id=123#hash'
->>> splituri(uri).update('scheme', 'http')
-'http://john:doe@internet.com:8080/path?search=test&id=123#hash'
-
 ```
 
 ## Attributes
@@ -87,11 +80,6 @@ should be noted that it's possible to use getquery to access individual params.
 
 - update(attribute:string, value:string)
     * `description` This is a generic update method. It will replace the specified attribute with the supplied value. All top level URI components are supported. Authority sub components are not supported at this time. If an invalid attribute is passed, update will throw a AttributeError. Note, update does not care if the value exists or not. In other words even if you pass a value for a part that does not exist the part will be set with the passed value.
-    * `arguments` takes two string arguments
-    * `return` full URI
-
-- join(attribute:string, value:string)
-    * `description` This method simply takes two URI parts and concatenates them.
     * `arguments` takes two string arguments
     * `return` full URI
 

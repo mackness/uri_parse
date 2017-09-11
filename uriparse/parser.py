@@ -127,10 +127,6 @@ class SplitResultsContainer(recordtype.recordtype('SplitResultsContainer', _URI_
         setattr(self, attribute, value)
         return self._geturi()
 
-    def join(self, parta, partb):
-        """join two URI parts togehter"""
-
-
 def splituri(uristring):
     """
         This factory returns an instance of SplitResultsContainer that contains a 5 part tuple
